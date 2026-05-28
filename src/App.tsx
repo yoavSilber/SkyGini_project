@@ -54,7 +54,7 @@ export default function App() {
     // Check cache before making a network call
     const cached = cache.current.get(cacheKey);
     if (cached) {
-      setResults(cached);
+      setResults(cached); // already sorted from first fetch
       setBestIdx(pickBestIndex(cached));
       setFromCache(true);
       return;
@@ -76,11 +76,14 @@ export default function App() {
 
       const options = (await res.json()) as FlightOption[];
 
-      // Store in cache for future identical searches
-      cache.current.set(cacheKey, options);
+      // Sort by price ascending so the best option is always visible at the top
+      const sorted = [...options].sort((a, b) => a.price - b.price);
 
-      setResults(options);
-      setBestIdx(pickBestIndex(options));
+      // Store in cache for future identical searches
+      cache.current.set(cacheKey, sorted);
+
+      setResults(sorted);
+      setBestIdx(pickBestIndex(sorted));
     } catch {
       setError("Could not reach the SkyGini API. Check your connection and try again.");
     } finally {
