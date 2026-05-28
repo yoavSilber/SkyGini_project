@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import type { FlightOption, SearchParams } from "./lib/types";
-import { pickBestIndex, totalDurationMinutes } from "./lib/bestFlight";
+import { sortByBest, totalDurationMinutes } from "./lib/bestFlight";
 import "./index.css";
 
 const API_URL = "/api/search"; // Vite proxies this to api.skygini.com (avoids CORS)
@@ -15,7 +15,6 @@ export default function App() {
 
   // UI state
   const [results, setResults] = useState<FlightOption[] | null>(null);
-  const [bestIdx, setBestIdx] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fromCache, setFromCache] = useState(false);
@@ -36,10 +35,8 @@ export default function App() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Reset previous results and errors
     setError(null);
     setResults(null);
-    setBestIdx(null);
     setFromCache(false);
 
     const validationError = validate();
@@ -55,7 +52,6 @@ export default function App() {
     const cached = cache.current.get(cacheKey);
     if (cached) {
       setResults(cached); // already sorted from first fetch
-      setBestIdx(pickBestIndex(cached));
       setFromCache(true);
       return;
     }
@@ -76,14 +72,12 @@ export default function App() {
 
       const options = (await res.json()) as FlightOption[];
 
-      // Sort by price ascending so the best option is always visible at the top
-      const sorted = [...options].sort((a, b) => a.price - b.price);
+      // Sort: lowest price first, shortest duration as tiebreak.
+      // After sorting, index 0 is always the Best Flight.
+      const sorted = sortByBest(options);
 
-      // Store in cache for future identical searches
       cache.current.set(cacheKey, sorted);
-
       setResults(sorted);
-      setBestIdx(pickBestIndex(sorted));
     } catch {
       setError("Could not reach the SkyGini API. Check your connection and try again.");
     } finally {
@@ -171,7 +165,7 @@ export default function App() {
                 const outboundDur = legDurationMinutes(outbound);
                 const returnDur = legDurationMinutes(returnFlight);
                 const totalDur = totalDurationMinutes(option);
-                const isBest = i === bestIdx;
+                const isBest = i === 0; // after sorting, index 0 is always the best
 
                 return (
                   <tr key={i} className={isBest ? "best-row" : undefined}>
