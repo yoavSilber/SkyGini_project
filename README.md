@@ -40,7 +40,7 @@ src/
 Four inputs: origin, destination (both auto-uppercased), departure date, return date. On submit, validation runs first — IATA codes must match `/^[A-Z]{3}$/`, origin and destination must differ, return must be on or after departure. If validation fails, an error message is shown and no network call is made.
 
 ### 2. API call (`App.tsx`)
-The form submits to the SkyGini API directly from the browser using `fetch`. The API key is in the `X-API-Key` header. Before calling the API, we check the cache.
+The form POSTs to `/api/search`, which the Vite dev server proxies to `api.skygini.com`. The proxy adds the `X-API-Key` header server-side, so the key never reaches the browser. Before making the call, we check the cache.
 
 ### 3. Best flight logic (`lib/bestFlight.ts`)
 `pickBestIndex` walks the results array once:
@@ -64,7 +64,7 @@ The cache lives for the page lifetime. A full page reload clears it, which match
 - "Total duration" = sum of all leg flying times. Chosen for simplicity — it makes the price tie-break meaningful.
 - "Airlines" = unique carrier codes across all legs, comma-joined. No code-to-name mapping (would need a static lookup table).
 - Session = page lifetime (in-memory, clears on reload).
-- The API key is committed to the repo since it was provided in the assignment PDF. Would never do this in production.
+- The API key lives in `.env.local` (gitignored). It is included in the ZIP submission for convenience since it was provided in the assignment PDF. In production it would live in a backend server and never reach the client.
 
 ## AI Usage
 
