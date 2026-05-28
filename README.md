@@ -79,7 +79,7 @@ The cache lives for the page lifetime. A full page reload clears it, which match
   - Noticed that "Total Duration" as a single number for a round trip was confusing and asked to show each leg's duration separately
   - Caught that the original table didn't make clear what "Depart" and "Arrive" meant for a round trip and asked to split it into Outbound / Return columns
   - Decided to simplify the best-flight logic from a manual loop into a single sort, making it easier to read and explain
-- **One issue I noticed:** the API returns float prices like `1441.1799999999998`. Without rounding, a price tie-break would silently fail because `===` would return false for two prices that look equal. The fix is `Math.round(n * 100) / 100` before comparing.
+- **One bug I found and fixed:** the `formatDuration` function originally used `Math.round` on the leftover minutes after dividing by 60. For a duration like 119.5 minutes this produced "1h 60m" instead of "2h 0m". The fix was to round the total minutes first, then split into hours and minutes — so the remainder can never reach 60.
 - **What I would improve with more time:**
   - Unit tests for `sortByBest` (lowest price wins, tie-break by duration, float edge case)
   - Move the API key to a real backend so it never touches the client even in production
