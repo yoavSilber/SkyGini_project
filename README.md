@@ -69,13 +69,18 @@ The cache lives for the page lifetime. A full page reload clears it, which match
 ## AI Usage
 
 - **Tool used:** Claude Code (Opus 4.7)
-- **What I asked it to help with:** scaffold the Vite project, write the initial versions of `App.tsx`, `bestFlight.ts`, and `types.ts`, and help structure the README.
-- **AI-generated / AI-assisted:** the scaffold (`npm create vite`), initial file structure, form JSX, table rendering, and CSS.
-- **Decisions I made myself:** use plain React instead of Next.js (I know React better and the assignment allows frontend-only), the cache key format, rounding prices before the tie-break comparison, testing the API with a real curl before writing any code.
-- **One issue I noticed:** the API returns float prices like `1441.1799999999998`. Without rounding, a price tie-break would silently fail because `===` would return false for two prices that look equal. The fix is `Math.round(n * 100) / 100` before comparing — simple and easy to explain.
+- **What I asked it to help with:** I started by asking Claude to read the assignment PDF and help me break the problem into smaller, manageable parts before writing any code. We planned the structure together — identifying the key pieces (form, API call, best-flight logic, cache) and deciding how they should connect. Then we implemented each part step by step, with Claude writing the initial version of each file and me reviewing, questioning, and adjusting along the way.
+- **AI-generated / AI-assisted:** the project scaffold (`npm create vite`), initial versions of `App.tsx`, `bestFlight.ts`, `types.ts`, and the CSS. Claude also helped debug the CORS issue and the Vite env variable loading problem.
+- **Decisions I made myself:**
+  - Chose plain React over Next.js — I know React better and wanted to be able to explain every line in the review
+  - Decided to use the Vite proxy to solve CORS rather than exposing the API key in the browser
+  - Noticed that "Total Duration" as a single number for a round trip was confusing and asked to show each leg's duration separately
+  - Caught that the original table didn't make clear what "Depart" and "Arrive" meant for a round trip and asked to split it into Outbound / Return columns
+  - Decided to simplify the best-flight logic from a manual loop into a single sort, making it easier to read and explain
+- **One issue I noticed:** the API returns float prices like `1441.1799999999998`. Without rounding, a price tie-break would silently fail because `===` would return false for two prices that look equal. The fix is `Math.round(n * 100) / 100` before comparing.
 - **What I would improve with more time:**
-  - Unit tests for `pickBestIndex` (lowest price, tie-break, empty input, float edge case)
-  - Move the API key to a backend proxy so it's not visible in the browser
+  - Unit tests for `sortByBest` (lowest price wins, tie-break by duration, float edge case)
+  - Move the API key to a real backend so it never touches the client even in production
   - Airline code → airline name mapping
   - Sort/filter controls on the results table
   - Show number of stops per option
