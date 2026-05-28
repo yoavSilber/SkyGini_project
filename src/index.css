@@ -1,0 +1,112 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f9f9f9;
+  color: #222;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 24px;
+}
+
+h2 {
+  margin: 24px 0 12px;
+}
+
+/* Search form */
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #555;
+}
+
+.form input {
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form button {
+  padding: 8px 20px;
+  font-size: 14px;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.error {
+  background: #fde8ea;
+  color: #b00020;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+/* Results table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f0f0f0;
+}
+
+/* Best flight row */
+.best-row {
+  background: #e8f5e9;
+}
+
+/* "Best" badge */
+.badge {
+  background: #2e7d32;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Cached indicator */
+.cached {
+  font-size: 13px;
+  color: #888;
+  font-weight: normal;
+}
