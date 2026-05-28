@@ -1,6 +1,6 @@
 # SkyGini Flight Search — Home Assignment
 
-A flight search app built with Vite + React + TypeScript. Search round-trip flights via the SkyGini API, view results sorted by price, and see the best option highlighted instantly.
+A small React app that searches flights via the SkyGini API and displays results in a table, with a highlighted "Best Flight" and a simple in-memory cache.
 
 ## Stack
 
@@ -61,9 +61,10 @@ The cache lives for the page lifetime. A full page reload clears it, which match
 ## Assumptions
 
 - Prices are USD (the API doesn't return a currency field).
-- "Total duration" = sum of all leg flying times, chosen for simplicity.
+- "Total duration" = sum of all leg flying times. Chosen for simplicity — it makes the price tie-break meaningful.
 - "Airlines" = unique carrier codes across all legs, comma-joined. No code-to-name mapping (would need a static lookup table).
 - Session = page lifetime (in-memory, clears on reload).
+- The API key lives in `.env.local` (gitignored). It is included in the ZIP submission for convenience since it was provided in the assignment PDF. In production it would live in a backend server and never reach the client.
 
 ## AI Usage
 
@@ -74,9 +75,10 @@ The cache lives for the page lifetime. A full page reload clears it, which match
   - The best-flight logic started as a manual loop with multiple tracking variables — I found it hard to follow and pushed to simplify it into a single sort function
   - The API key was originally hardcoded directly in `vite.config.ts` — I caught that and moved it to `.env.local`
   - When the app showed a CORS error on first run, I understood what was wrong and directed the fix using Vite's proxy instead of adding a separate backend
+  - Create the ReadMe file
 - **Decisions I made myself:**
-  - Chose plain React over Next.js — I know React better and wanted to be able to explain every line in the review
-  - Decided to use the Vite proxy to handle CORS rather than exposing the API key in the browser or adding a separate backend
+  - Noticed that "Total Duration" as a single number for a round trip was confusing and asked to show each leg's duration separately
+  - Caught that the original table didn't make clear what "Depart" and "Arrive" meant for a round trip and asked to split it into Outbound / Return columns
   - Decided to simplify the best-flight logic from a manual loop into a single sort, making it easier to read and explain
 - **One bug I found and fixed:** the `formatDuration` function originally used `Math.round` on the leftover minutes after dividing by 60. For a duration like 119.5 minutes this produced "1h 60m" instead of "2h 0m". The fix was to round the total minutes first, then split into hours and minutes — so the remainder can never reach 60.
 - **What I would improve with more time:**
@@ -86,3 +88,7 @@ The cache lives for the page lifetime. A full page reload clears it, which match
   - Sort/filter controls on the results table
   - Show number of stops per option
   - LRU cap on the cache so it can't grow indefinitely
+
+## What is incomplete
+
+All required features are implemented. The "would improve" list above is polish left out to stay in the timebox.
