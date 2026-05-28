@@ -31,7 +31,7 @@ src/
   index.css            # global styles
   lib/
     types.ts           # SearchParams, FlightLeg, FlightOption
-    bestFlight.ts      # totalDurationMinutes + pickBestIndex
+    bestFlight.ts      # sortByBest + totalDurationMinutes
 ```
 
 ## How it works
@@ -43,13 +43,13 @@ Four inputs: origin, destination (both auto-uppercased), departure date, return 
 The form POSTs to `/api/search`, which the Vite dev server proxies to `api.skygini.com`. The proxy adds the `X-API-Key` header server-side, so the key never reaches the browser. Before making the call, we check the cache.
 
 ### 3. Best flight logic (`lib/bestFlight.ts`)
-`pickBestIndex` walks the results array once:
-- Lowest price wins.
-- If two prices are equal (compared rounded to 2 decimals, to avoid float-precision issues like `1441.1799999999998`), shortest total duration wins.
+`sortByBest` sorts all options using two rules:
+- Lowest price first.
+- If two prices are equal (rounded to 2 decimals to avoid float-precision noise), shortest total duration wins.
+
+After sorting, index 0 is always the Best Flight — it gets a green background and a "Best" badge.
 
 `totalDurationMinutes` sums `(arrival - departure)` across all legs of the option.
-
-The winning row gets a green background and a "Best" badge.
 
 ### 4. Cache (`App.tsx`)
 A `useRef<Map<string, FlightOption[]>>` holds the cache. `useRef` persists across re-renders without causing them — ideal for this use case. The key is `"ORIGIN|DEST|departDate|arriveDate"`. On every submit:
@@ -75,6 +75,7 @@ The cache lives for the page lifetime. A full page reload clears it, which match
   - The best-flight logic started as a manual loop with multiple tracking variables — I found it hard to follow and pushed to simplify it into a single sort function
   - The API key was originally hardcoded directly in `vite.config.ts` — I caught that and moved it to `.env.local`
   - When the app showed a CORS error on first run, I understood what was wrong and directed the fix using Vite's proxy instead of adding a separate backend
+  - Create the ReadMe file
 - **Decisions I made myself:**
   - Noticed that "Total Duration" as a single number for a round trip was confusing and asked to show each leg's duration separately
   - Caught that the original table didn't make clear what "Depart" and "Arrive" meant for a round trip and asked to split it into Outbound / Return columns
