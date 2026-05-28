@@ -70,10 +70,12 @@ The cache lives for the page lifetime. A full page reload clears it, which match
 
 - **Tool used:** Claude Code (Opus 4.7)
 - **What I asked it to help with:** I started by asking Claude to read the assignment PDF and help me break the problem into smaller, manageable parts before writing any code. We planned the structure together — identifying the key pieces (form, API call, best-flight logic, cache) and deciding how they should connect. Then we implemented each part step by step, with Claude writing the initial version of each file and me reviewing, questioning, and adjusting along the way.
-- **AI-generated / AI-assisted:** the project scaffold (`npm create vite`), initial versions of `App.tsx`, `bestFlight.ts`, `types.ts`, and the CSS. Claude also helped debug the CORS issue and the Vite env variable loading problem.
+- **AI-generated / AI-assisted:** AI was involved in every part of the project — but for each part I read through the output, made sure I understood it, and changed things I didn't like. For example:
+  - The initial table had a single "Depart" and "Arrive" column — I reviewed it, realized it was misleading for a round trip, and asked to redesign it into Outbound / Return columns with per-leg durations
+  - The best-flight logic started as a manual loop with multiple tracking variables — I found it hard to follow and pushed to simplify it into a single sort function
+  - The API key was originally hardcoded directly in `vite.config.ts` — I caught that and moved it to `.env.local`
+  - When the app showed a CORS error on first run, I understood what was wrong and directed the fix using Vite's proxy instead of adding a separate backend
 - **Decisions I made myself:**
-  - Chose plain React over Next.js — I know React better and wanted to be able to explain every line in the review
-  - Decided to use the Vite proxy to solve CORS rather than exposing the API key in the browser
   - Noticed that "Total Duration" as a single number for a round trip was confusing and asked to show each leg's duration separately
   - Caught that the original table didn't make clear what "Depart" and "Arrive" meant for a round trip and asked to split it into Outbound / Return columns
   - Decided to simplify the best-flight logic from a manual loop into a single sort, making it easier to read and explain
